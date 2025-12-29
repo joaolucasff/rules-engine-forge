@@ -1,12 +1,27 @@
 import { create } from 'zustand';
-import { NotaFiscal, ExcelData, LogEntry, ProcessingResult, PdfFile } from '@/types';
+import { NotaFiscal, ExcelData, LogEntry, ProcessingResult } from '@/types';
+import { ProcessarResponse, BuscarPdfsResponse, ValidarPastaResponse } from '@/services/api';
 
-type ProcessingState = 'idle' | 'ready' | 'processing' | 'paused' | 'completed';
+type ProcessingState = 'idle' | 'ready' | 'processing' | 'completed' | 'error';
+
+interface SelectedDate {
+  ano: number;
+  mes: number;
+  dia: number;
+}
 
 interface AppState {
+  // Estado do backend
+  backendOnline: boolean;
+  setBackendOnline: (online: boolean) => void;
+  
   // Estado de processamento
   processingState: ProcessingState;
   setProcessingState: (state: ProcessingState) => void;
+  
+  // Data selecionada para o fluxo
+  selectedDate: SelectedDate | null;
+  setSelectedDate: (date: SelectedDate | null) => void;
   
   // Arquivos Excel
   excelFiles: File[];
@@ -14,46 +29,62 @@ interface AppState {
   removeExcelFile: (file: File) => void;
   clearExcelFiles: () => void;
   
-  // Dados extraídos do Excel
+  // Dados extraidos do Excel
   excelData: ExcelData | null;
   setExcelData: (data: ExcelData | null) => void;
   
-  // Arquivos PDF
-  pdfFiles: PdfFile[];
-  addPdfFiles: (files: File[]) => void;
-  removePdfFile: (file: PdfFile) => void;
-  clearPdfFiles: () => void;
-  
-  // Notas fiscais em processamento
+  // Notas fiscais extraidas
   notas: NotaFiscal[];
   setNotas: (notas: NotaFiscal[]) => void;
   updateNota: (id: string, updates: Partial<NotaFiscal>) => void;
+  
+  // Validacao da pasta de destino
+  pastaValidation: ValidarPastaResponse | null;
+  setPastaValidation: (validation: ValidarPastaResponse | null) => void;
+  
+  // Preview da busca (antes de copiar)
+  preview: BuscarPdfsResponse | null;
+  setPreview: (preview: BuscarPdfsResponse | null) => void;
+  
+  // Resultado do processamento
+  resultado: ProcessarResponse | null;
+  setResultado: (resultado: ProcessarResponse | null) => void;
   
   // Progresso
   progress: {
     current: number;
     total: number;
-    currentNota: NotaFiscal | null;
+    message: string;
   };
-  setProgress: (current: number, total: number, currentNota: NotaFiscal | null) => void;
-  
-  // Resultado do processamento
-  result: ProcessingResult | null;
-  setResult: (result: ProcessingResult | null) => void;
+  setProgress: (current: number, total: number, message: string) => void;
   
   // Logs
   logs: LogEntry[];
   addLog: (entry: LogEntry) => void;
   clearLogs: () => void;
   
+  // Erro
+  error: string | null;
+  setError: (error: string | null) => void;
+  
   // Reset
   reset: () => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
+  // Backend
+  backendOnline: false,
+  setBackendOnline: (online) => set({ backendOnline: online }),
+  
+  // Processamento
   processingState: 'idle',
   setProcessingState: (state) => set({ processingState: state }),
   
+  // Data selecionada
+  selectedDate: null,
+  setSelectedDate: (date) => set({ selectedDate: date }),
+  
+  // Excel
   excelFiles: [],
   addExcelFile: (file) => set((state) => ({ 
     excelFiles: [...state.excelFiles, file] 
@@ -66,52 +97,58 @@ export const useAppStore = create<AppState>((set) => ({
   excelData: null,
   setExcelData: (data) => set({ excelData: data }),
   
-  pdfFiles: [],
-  addPdfFiles: (files) => set((state) => {
-    const newPdfs: PdfFile[] = files.map(file => ({
-      file,
-      name: file.name,
-      normalizedNumbers: []
-    }));
-    return { pdfFiles: [...state.pdfFiles, ...newPdfs] };
-  }),
-  removePdfFile: (pdf) => set((state) => ({
-    pdfFiles: state.pdfFiles.filter(p => p !== pdf)
-  })),
-  clearPdfFiles: () => set({ pdfFiles: [] }),
-  
+  // Notas
   notas: [],
   setNotas: (notas) => set({ notas }),
   updateNota: (id, updates) => set((state) => ({
     notas: state.notas.map(n => n.id === id ? { ...n, ...updates } : n)
   })),
   
+  // Validacao pasta
+  pastaValidation: null,
+  setPastaValidation: (validation) => set({ pastaValidation: validation }),
+  
+  // Preview
+  preview: null,
+  setPreview: (preview) => set({ preview }),
+  
+  // Resultado
+  resultado: null,
+  setResultado: (resultado) => set({ resultado }),
+  
+  // Progresso
   progress: {
     current: 0,
     total: 0,
-    currentNota: null
+    message: ''
   },
-  setProgress: (current, total, currentNota) => set({
-    progress: { current, total, currentNota }
+  setProgress: (current, total, message) => set({
+    progress: { current, total, message }
   }),
   
-  result: null,
-  setResult: (result) => set({ result }),
-  
+  // Logs
   logs: [],
   addLog: (entry) => set((state) => ({
     logs: [...state.logs, entry]
   })),
   clearLogs: () => set({ logs: [] }),
   
+  // Erro
+  error: null,
+  setError: (error) => set({ error }),
+  
+  // Reset
   reset: () => set({
     processingState: 'idle',
+    selectedDate: null,
     excelFiles: [],
     excelData: null,
-    pdfFiles: [],
     notas: [],
-    progress: { current: 0, total: 0, currentNota: null },
-    result: null,
-    logs: []
+    pastaValidation: null,
+    preview: null,
+    resultado: null,
+    progress: { current: 0, total: 0, message: '' },
+    logs: [],
+    error: null
   })
 }));

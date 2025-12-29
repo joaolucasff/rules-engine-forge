@@ -20,7 +20,7 @@ export type ProcessingStatus =
   | 'processing'   // Em processamento
   | 'success'      // Sucesso
   | 'warning'      // Aviso (copiou mas com ressalvas)
-  | 'error'        // Erro (não encontrou PDF)
+  | 'error'        // Erro (nao encontrou PDF)
   | 'skipped';     // Ignorado (fornecedor na lista de ignorados)
 
 export interface SecaoVencimento {
@@ -58,16 +58,34 @@ export interface LogEntry {
 
 // Lista de fornecedores a serem ignorados
 export const FORNECEDORES_IGNORADOS = [
+  // Servicos financeiros
   'NOVAX',
-  'CREDVALE', 
+  'CREDVALE',
   'CAPITAL',
   'STONE',
   'SQUID',
+  // Governo e saude
   'RECEITA FEDERAL',
-  'UNIMED'
+  'UNIMED',
+  // Telefonia e internet (padrao diferente)
+  'TELEFONICA',
+  'VIVO',
+  'TIM',
+  'CLARO',
+  'OI',
+  'NEXTEL',
+  // Concessionarias (agua, luz)
+  'CELESC',
+  'CASAN',
+  'COPEL',
+  'SANEPAR',
+  'SABESP',
+  'CPFL',
+  'CEMIG',
+  'ENERGISA'
 ];
 
-// Prefixos a remover dos números de nota
+// Prefixos a remover dos numeros de nota
 export const PREFIXOS_REMOVER = [
   'DP-',
   'DA-',

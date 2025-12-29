@@ -1,73 +1,268 @@
-# Welcome to your Lovable project
+# 📊 GRÁFICOS 3D - MEGATELA FLORIPA SQUARE
 
-## Project info
+Visualizações 3D de superfície para análise de Audiência e Frequência ao longo de 30 dias.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 📁 Arquivos Inclusos
 
-## How can I edit this code?
+- `grafico_3d_plotly.py` - Gráfico interativo (HTML) com Plotly
+- `grafico_3d_matplotlib.py` - Gráficos estáticos (PNG) com Matplotlib
+- `requirements.txt` - Dependências do projeto
+- `README.md` - Este arquivo
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🚀 Instalação
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### 1. **Criar Ambiente Virtual (Recomendado)**
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# Criar ambiente virtual
+python -m venv venv
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Ativar ambiente virtual
+# Windows:
+venv\Scripts\activate
+# Mac/Linux:
+source venv/bin/activate
 ```
 
-**Edit a file directly in GitHub**
+### 2. **Instalar Dependências**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+pip install -r requirements.txt
+```
 
-**Use GitHub Codespaces**
+**OU instalar manualmente:**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+# Para gráfico interativo (Plotly)
+pip install plotly kaleido pandas numpy
 
-## What technologies are used for this project?
+# Para gráficos estáticos (Matplotlib)
+pip install matplotlib numpy
 
-This project is built with:
+# Instalar tudo de uma vez
+pip install plotly kaleido matplotlib numpy pandas
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 📊 Uso
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### **Opção 1: Gráfico Interativo (Plotly)**
 
-## Can I connect a custom domain to my Lovable project?
+```bash
+python grafico_3d_plotly.py
+```
 
-Yes, you can!
+**Gera:**
+- `grafico_3d_megatela_interativo.html` - Abra no navegador
+- `grafico_3d_megatela_4k.png` - Imagem estática 4K
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+**Recursos:**
+- ✅ Rotação 360° com mouse
+- ✅ Zoom interativo
+- ✅ Hover com valores
+- ✅ Export PNG direto do navegador
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+### **Opção 2: Gráficos Estáticos (Matplotlib)**
+
+```bash
+python grafico_3d_matplotlib.py
+```
+
+**Gera 6 imagens PNG:**
+1. `grafico_3d_megatela_isometrico.png` - Vista padrão
+2. `grafico_3d_megatela_frontal.png` - Vista frontal
+3. `grafico_3d_megatela_lateral.png` - Vista lateral
+4. `grafico_3d_megatela_superior.png` - Vista de cima
+5. `grafico_3d_megatela_perspectiva.png` - Perspectiva
+6. `grafico_3d_megatela_4K.png` - Versão ultra HD (DPI 400)
+
+**Recursos:**
+- ✅ Alta qualidade (300-400 DPI)
+- ✅ Múltiplos ângulos
+- ✅ Pronto para impressão
+- ✅ Ideal para relatórios
+
+---
+
+## 🎨 Personalização
+
+### **Alterar Dados**
+
+Edite o dicionário `dados_grafico` em qualquer script:
+
+```python
+dados_grafico = {
+    'dias': [1, 2, 3, ...],
+    'audiencia': [337013, 559702, ...],
+    'frequencia': [3.6, 4.33, ...]
+}
+```
+
+### **Alterar Cores**
+
+**Plotly (`grafico_3d_plotly.py`):**
+```python
+colorscale=[
+    [0.0, 'rgb(13, 71, 161)'],   # Azul
+    [1.0, 'rgb(183, 28, 28)']    # Vermelho
+]
+```
+
+**Matplotlib (`grafico_3d_matplotlib.py`):**
+```python
+cores = [
+    '#0D47A1',  # Azul escuro
+    '#B71C1C'   # Vermelho
+]
+```
+
+### **Alterar Resolução**
+
+**Plotly:**
+```python
+fig.write_image('arquivo.png', width=3200, height=2400)
+```
+
+**Matplotlib:**
+```python
+fig = plt.figure(figsize=(20, 14), dpi=300)
+```
+
+---
+
+## 📐 Ângulos de Visualização
+
+### **Matplotlib - Função `view_init()`**
+
+```python
+ax.view_init(elev=25, azim=45)
+```
+
+**Ângulos Pré-definidos:**
+- Isométrico: `(25, 45)`
+- Frontal: `(15, 0)`
+- Lateral: `(15, 90)`
+- Superior: `(85, 45)`
+- Perspectiva: `(30, 60)`
+
+### **Plotly - Camera Settings**
+
+```python
+camera=dict(
+    eye=dict(x=1.5, y=1.5, z=1.3)
+)
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### **Erro: "No module named 'plotly'"**
+```bash
+pip install plotly
+```
+
+### **Erro: "No module named 'kaleido'"**
+```bash
+pip install kaleido
+```
+
+### **Erro ao salvar PNG no Plotly**
+```bash
+# Instalar kaleido
+pip install kaleido
+
+# OU usar formato SVG
+fig.write_image('arquivo.svg')
+```
+
+### **Gráfico não aparece no Matplotlib**
+```bash
+# Adicionar ao final do script
+plt.show()
+```
+
+### **Baixa qualidade na imagem**
+```python
+# Aumentar DPI
+fig = plt.figure(dpi=400)  # Matplotlib
+fig.write_image('arquivo.png', scale=4)  # Plotly
+```
+
+---
+
+## 📊 Comparação: Plotly vs Matplotlib
+
+| Recurso | Plotly | Matplotlib |
+|---------|--------|------------|
+| **Interatividade** | ✅ Rotação, zoom, hover | ❌ Estático |
+| **Qualidade** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Tamanho arquivo** | 📁 Grande (HTML) | 📁 Pequeno (PNG) |
+| **Uso em apresentações** | ✅ Interativo | ✅ Imagem |
+| **Uso em relatórios** | ⚠️ Difícil | ✅ Perfeito |
+| **Customização** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Velocidade** | 🐇 Rápido | 🐢 Mais lento |
+
+**Recomendação:**
+- **Apresentações digitais** → Use Plotly
+- **Relatórios impressos** → Use Matplotlib
+- **Melhor dos dois mundos** → Use ambos!
+
+---
+
+## 💡 Dicas de Uso
+
+### **PowerPoint/Keynote**
+1. Plotly: Exportar HTML e inserir como objeto web
+2. Matplotlib: Inserir PNG de alta qualidade
+
+### **Relatórios PDF**
+Use as imagens PNG do Matplotlib (300+ DPI)
+
+### **Sites/Dashboards**
+Use o HTML do Plotly (totalmente interativo)
+
+### **Impressão**
+Use PNG 4K do Matplotlib (DPI 400)
+
+---
+
+## 📚 Documentação
+
+- **Plotly:** https://plotly.com/python/
+- **Matplotlib:** https://matplotlib.org/
+- **NumPy:** https://numpy.org/
+
+---
+
+## 🎯 Próximos Passos
+
+- [ ] Adicionar animação temporal (evolução dia a dia)
+- [ ] Implementar dashboard interativo com Dash
+- [ ] Adicionar mais métricas (alcance, impacto, etc)
+- [ ] Criar versão com projeção real dos dados
+- [ ] Exportar para formatos 3D (STL, OBJ)
+
+---
+
+## 📞 Suporte
+
+Em caso de dúvidas ou problemas:
+1. Verificar seção de Troubleshooting
+2. Conferir documentação oficial das bibliotecas
+3. Revisar os comentários no código
+
+---
+
+## 📄 Licença
+
+© 2025 Floripa Square - Todos os direitos reservados
+
+---
+
+**Desenvolvido com ❤️ para Megatela Floripa Square**

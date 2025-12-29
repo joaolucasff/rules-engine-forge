@@ -1,0 +1,95 @@
+PROJETO_COMPLETO_FLUXO_CAIXA.md
+MD
+
+Preciso que você crie este sistema completo. Leia toda a documentação abaixo com atenção. Ela contém todas as regras de negócio, fluxos e requisitos técnicos.
+
+
+Thought for 16s
+Vou ler a documentação completa para entender todos os requisitos do sistema.
+
+Read upload
+PROJETO_COMPLETO_FLUXO_CAIXA.md
+Entendi o escopo do projeto. Trata-se de um Sistema de Automação de Fluxo de Caixa para organizar notas fiscais PDF. Há uma limitação crítica: a documentação especifica uma aplicação desktop (Python + Flet) com acesso ao sistema de arquivos local, mas Lovable é uma plataforma web e não pode acessar o sistema de arquivos do usuário diretamente.
+
+Vou criar uma simulação web completa da interface e lógica do sistema, onde o usuário poderá:
+
+Fazer upload de planilhas Excel
+Fazer upload de PDFs
+Processar e baixar os arquivos organizados em ZIP
+Design escolhido: Interface profissional, clean e corporativa com tons de azul-marinho e verde para ações. Inspirada em dashboards financeiros modernos com cards bem definidos e progresso em tempo real.
+
+Vou criar o design system e a estrutura completa:
+
+Show all
+15 edits made
+Agora vou criar os componentes principais da aplicação:
+
+Show all
+8 edits made
+O sistema está funcionando! Criei uma aplicação web completa de Automação de Fluxo de Caixa com:
+
+Funcionalidades implementadas:
+
+✅ Upload de planilhas Excel (.xlsx/.xls) com parsing automático
+✅ Upload múltiplo de PDFs com drag-and-drop
+✅ Normalização de números de nota (remove prefixos DP-, U-, zeros, sufixos -001)
+✅ Busca inteligente de PDFs correspondentes
+✅ Lista de fornecedores ignorados (NOVAX, STONE, CREDVALE, etc.)
+✅ Numeração sequencial contínua (1-, 2-, 3-)
+✅ Painel de progresso em tempo real
+✅ Tabela de resultados com filtros e detalhes
+✅ Log de processamento exportável
+✅ Download de ZIP organizado por data de vencimento
+Nota importante: Por ser web (não desktop), o sistema funciona via upload/download em vez de acesso direto ao sistema de arquivos.
+
+What's next?
+Refine & Customize: Ajuste cores, textos e layout via Visual Edits ou prompts
+Adicionar mais regras: Implemente casos especiais (concessionárias, guias, planos de saúde)
+Persistência: Conecte ao Supabase para salvar histórico de processamentos
+
+Code
+
+Implement web mock UI
+Preview Latest
+
+
+
+
+
+
+18 de dez.
+at 18:54
+ah entendi, vc addicnou uma botão pra buscar arquivos, mas eles devem ser buscados por automatico pelo sistema, o que vc pode fazer?
+
+exemplo, nessa pasta: Y:\OneDrive - SPR\Drive - CSC\Financeiro\01-Fluxo\Fluxo de Caixa\jota jota\2025
+
+é onde ficam as pastas dos meses, o sistema copiar e trazer para dentro dessas pastas de meses, onde dentro dessa pasta com final 2025, terão todos os meses do an ...
+
+Show more
+
+
+Thought for 14s
+Entendi perfeitamente o que você precisa! Mas preciso te explicar uma limitação técnica importante:
+
+Limitação de Aplicações Web
+Navegadores web NÃO podem acessar o sistema de arquivos do computador automaticamente por razões de segurança. Isso significa que:
+
+❌ Não é possível navegar em pastas como Y:\OneDrive\...
+❌ Não é possível pesquisar arquivos automaticamente (Ctrl+F)
+❌ Não é possível copiar arquivos de uma pasta para outra
+Isso é uma proteção de segurança fundamental dos navegadores - imagine se qualquer site pudesse ler seus arquivos!
+
+Alternativas
+Opção	Prós	Contras
+1. Versão Web (atual)	Funciona em qualquer lugar, sem instalação	Requer arrastar/soltar arquivos manualmente
+2. Aplicação Desktop	Acesso total ao sistema de arquivos, automação completa	Precisa ser desenvolvida fora do Lovable (Python, Electron, etc.)
+3. File System Access API	Permite selecionar pastas no navegador	Experimental, não automático, nem todos navegadores suportam
+Recomendação
+Para o que você descreveu (pesquisa automática em pastas, cópia de arquivos), você precisaria de uma aplicação desktop real - exatamente como estava na documentação original (Python + Flet).
+
+O Lovable é uma plataforma web, então posso manter a versão web onde você arrasta os PDFs manualmente e o sistema processa tudo, gerando um ZIP organizado para download.
+
+Quer que eu:
+
+Melhore a versão web atual - removendo confusões e otimizando o fluxo de arrastar arquivos?
+Te forneça o código Python para você rodar localmente como aplicação desktop?
