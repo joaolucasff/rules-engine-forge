@@ -13,15 +13,16 @@ export interface NotaFiscal {
   pdfOriginal?: File;
   pdfNomeDestino?: string;
   numeracao?: number;
+  linhaPlanilha?: number;
 }
 
-export type ProcessingStatus = 
-  | 'pending'      // Aguardando processamento
-  | 'processing'   // Em processamento
-  | 'success'      // Sucesso
-  | 'warning'      // Aviso (copiou mas com ressalvas)
-  | 'error'        // Erro (nao encontrou PDF)
-  | 'skipped';     // Ignorado (fornecedor na lista de ignorados)
+export type ProcessingStatus =
+  | 'pending'
+  | 'processing'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'skipped';
 
 export interface SecaoVencimento {
   dataVencimento: Date;
@@ -56,7 +57,65 @@ export interface LogEntry {
   details?: string;
 }
 
-// Lista de fornecedores a serem ignorados
+// ==================== TIPOS PARA MULTIPLOS DIAS ====================
+
+/** Formato de data ISO para APIs */
+export type ISODateString = string; // 'YYYY-MM-DD'
+
+/** Grupo de notas para enviar ao backend */
+export interface GrupoVencimentoAPI {
+  dataVencimento: ISODateString;
+  numerosNotas: string[];
+}
+
+/** Resultado de um grupo processado */
+export interface ResultadoGrupo {
+  dataVencimento: ISODateString;
+  pastaDestino: string;
+  totalNotas: number;
+  totalEncontrados: number;
+  totalCopiados: number;
+  totalNaoEncontrados: number;
+  totalIgnorados: number;
+  totalErros: number;
+  copiados: string[];
+  naoEncontrados: string[];
+  ignoradosPorTamanho: string[];
+  erros: { arquivo: string; erro: string }[];
+}
+
+/** Resposta consolidada do processamento multiplo */
+export interface ProcessarMultiplosResponse {
+  sucesso: boolean;
+  grupos: ResultadoGrupo[];
+  resumo: {
+    totalGrupos: number;
+    totalNotas: number;
+    totalEncontrados: number;
+    totalCopiados: number;
+    totalNaoEncontrados: number;
+    totalIgnorados: number;
+    totalErros: number;
+  };
+  tempoExecucaoMs: number;
+}
+
+/** Validacao de multiplas pastas */
+export interface ValidarPastasResponse {
+  sucesso: boolean;
+  grupos: {
+    dataVencimento: ISODateString;
+    pastaDestino: string;
+    existe: boolean;
+    vazia: boolean;
+    quantidadeArquivos: number;
+    erro?: string;
+  }[];
+}
+
+// ==================== CONSTANTES ====================
+
+/** Lista de fornecedores a serem ignorados */
 export const FORNECEDORES_IGNORADOS = [
   // Servicos financeiros
   'NOVAX',
@@ -67,14 +126,14 @@ export const FORNECEDORES_IGNORADOS = [
   // Governo e saude
   'RECEITA FEDERAL',
   'UNIMED',
-  // Telefonia e internet (padrao diferente)
+  // Telefonia e internet
   'TELEFONICA',
   'VIVO',
   'TIM',
   'CLARO',
   'OI',
   'NEXTEL',
-  // Concessionarias (agua, luz)
+  // Concessionarias
   'CELESC',
   'CASAN',
   'COPEL',
@@ -83,9 +142,9 @@ export const FORNECEDORES_IGNORADOS = [
   'CPFL',
   'CEMIG',
   'ENERGISA'
-];
+] as const;
 
-// Prefixos a remover dos numeros de nota
+/** Prefixos a remover dos numeros de nota */
 export const PREFIXOS_REMOVER = [
   'DP-',
   'DA-',
@@ -95,4 +154,4 @@ export const PREFIXOS_REMOVER = [
   'NOTA-',
   'FAT-',
   'V-'
-];
+] as const;

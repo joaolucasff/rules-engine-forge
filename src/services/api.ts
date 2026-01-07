@@ -1,3 +1,9 @@
+import type { 
+  GrupoVencimentoAPI, 
+  ProcessarMultiplosResponse, 
+  ValidarPastasResponse 
+} from '@/types';
+
 const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:3001/api';
 
 // Helper para ler erros do backend
@@ -36,21 +42,6 @@ export interface ValidarPastaResponse {
   caminho?: string;
 }
 
-export interface ProcessarResponse {
-  sucesso: boolean;
-  totalNotas: number;
-  totalEncontrados: number;
-  totalCopiados: number;
-  totalErros: number;
-  totalNaoEncontrados: number;
-  totalIgnorados: number;
-  copiados: string[];
-  erros: { arquivo: string; erro: string }[];
-  naoEncontrados: string[];
-  ignoradosPorTamanho: string[];
-  tempoExecucaoMs?: number;
-}
-
 export interface BuscarPdfsResponse {
   sucesso: boolean;
   encontrados: {
@@ -66,9 +57,12 @@ export interface BuscarPdfsResponse {
   totalIgnorados: number;
 }
 
+// Re-exporta tipos do types/index.ts para facilitar imports
+export type { ProcessarMultiplosResponse, ValidarPastasResponse };
+
 // ==================== FUNCOES DA API ====================
 
-// Verifica se o backend esta online
+/** Verifica se o backend esta online */
 export async function verificarBackend(): Promise<boolean> {
   try {
     const response = await fetch(`${API_BASE}/health`);
@@ -80,7 +74,7 @@ export async function verificarBackend(): Promise<boolean> {
   }
 }
 
-// Obtem configuracoes do backend
+/** Obtem configuracoes do backend */
 export async function obterConfig(): Promise<ConfigResponse> {
   const response = await fetch(`${API_BASE}/config`);
   if (!response.ok) {
@@ -90,7 +84,39 @@ export async function obterConfig(): Promise<ConfigResponse> {
   return response.json();
 }
 
-// Valida se a pasta de destino existe
+/** Valida multiplas pastas de destino de uma vez */
+export async function validarPastas(datasVencimento: string[]): Promise<ValidarPastasResponse> {
+  const response = await fetch(`${API_BASE}/copiar/validar-pastas`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ datasVencimento })
+  });
+
+  if (!response.ok) {
+    const { msg } = await readError(response);
+    throw new Error(`Erro ao validar pastas: ${msg}`);
+  }
+  return response.json();
+}
+
+/** Processa multiplos grupos de notas de uma vez */
+export async function processarMultiplos(grupos: GrupoVencimentoAPI[]): Promise<ProcessarMultiplosResponse> {
+  const response = await fetch(`${API_BASE}/copiar/processar-multiplos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ grupos })
+  });
+
+  if (!response.ok) {
+    const { msg } = await readError(response);
+    throw new Error(`Erro ao processar: ${msg}`);
+  }
+  return response.json();
+}
+
+// ==================== FUNCOES LEGADAS (para compatibilidade) ====================
+
+/** @deprecated Use validarPastas() para multiplas datas */
 export async function validarPasta(ano: number, mes: number, dia: number): Promise<ValidarPastaResponse> {
   const response = await fetch(`${API_BASE}/copiar/validar-pasta`, {
     method: 'POST',
@@ -105,7 +131,7 @@ export async function validarPasta(ano: number, mes: number, dia: number): Promi
   return response.json();
 }
 
-// Busca PDFs sem copiar (para preview)
+/** Busca PDFs sem copiar (para preview) */
 export async function buscarPdfs(numerosNotas: string[], ano: number): Promise<BuscarPdfsResponse> {
   const response = await fetch(`${API_BASE}/pdfs/buscar`, {
     method: 'POST',
@@ -120,27 +146,7 @@ export async function buscarPdfs(numerosNotas: string[], ano: number): Promise<B
   return response.json();
 }
 
-// Processa e copia PDFs para a pasta de destino
-export async function processarECopiar(
-  numerosNotas: string[],
-  ano: number,
-  mes: number,
-  dia: number
-): Promise<ProcessarResponse> {
-  const response = await fetch(`${API_BASE}/copiar/processar`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ numerosNotas, ano, mes, dia })
-  });
-
-  if (!response.ok) {
-    const { msg } = await readError(response);
-    throw new Error(`Erro ao processar: ${msg}`);
-  }
-  return response.json();
-}
-
-// Limpa o cache de PDFs no backend
+/** Limpa o cache de PDFs no backend */
 export async function limparCache(): Promise<void> {
   const response = await fetch(`${API_BASE}/pdfs/limpar-cache`, { method: 'POST' });
   if (!response.ok) {
